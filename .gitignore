@@ -4,7 +4,7 @@ bin
 develop-eggs
 koe
 parts
-src/djangorecipe.egg-info
+src/xabber_recipe.egg-info
 .coverage
 htmlcov
 /eggs

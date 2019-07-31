@@ -12,7 +12,7 @@ def read_file(name):
 readme = read_file('README.rst')
 changes = read_file('CHANGES.rst')
 
-setup(name='djangorecipe',
+setup(name='xabber_recipe',
       version=version,
       description="Buildout recipe for Django",
       long_description='\n\n'.join([readme, changes]),
@@ -31,19 +31,19 @@ setup(name='djangorecipe',
       keywords='',
       author='Roland van Laar',
       author_email='roland@micite.net',
-      url='https://github.com/rvanlaar/djangorecipe',
+      # url='https://github.com/rvanlaar/djangorecipe',
       license='BSD',
       zip_safe=False,
       install_requires=[
         'zc.buildout',
         'zc.recipe.egg',
-        'Django',
+        'Django==1.11.20',
       ],
       extras_require={'test': ['coverage',
                                'mock']},
       entry_points="""
       # -*- Entry points: -*-
       [zc.buildout]
-      default = djangorecipe.recipe:Recipe
+      default = xabber_recipe.recipe:Recipe
       """,
       )

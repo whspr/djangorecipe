@@ -4,7 +4,7 @@ import unittest
 
 import mock
 
-from djangorecipe import binscripts
+from xabber_recipe import binscripts
 
 
 class ScriptTestCase(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestTestScript(ScriptTestCase):
     def test_script(self, mock_setdefault, execute_from_command_line):
         with mock.patch.object(sys, 'argv', ['bin/test']):
             # The test script should execute the standard Django test command
-            # with any apps configured in djangorecipe given as its arguments.
+            # with any apps configured in xabber_recipe given as its arguments.
             binscripts.test('cheeseshop.development', '', 'spamm', 'eggs')
             self.assertTrue(execute_from_command_line.called)
             self.assertEqual(execute_from_command_line.call_args[0],
@@ -84,7 +84,7 @@ class TestTestScript(ScriptTestCase):
             self, mock_xml_report, mock_setdefault, execute_from_command_line):
         with mock.patch.object(sys, 'argv', ['bin/test']):
             # The test script should execute the standard Django test command
-            # with any apps configured in djangorecipe given as its arguments.
+            # with any apps configured in xabber_recipe given as its arguments.
             binscripts.test('cheeseshop.development',
                             'report xml_report', 'spamm', 'eggs')
             self.assertTrue(execute_from_command_line.called)

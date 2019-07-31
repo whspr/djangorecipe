@@ -8,14 +8,14 @@ import mock
 import pkg_resources
 from zc.buildout import UserError
 
-from djangorecipe.recipe import Recipe
+from xabber_recipe.recipe import Recipe
 
 
 class BaseTestRecipe(unittest.TestCase):
 
     def setUp(self):
         # Create a directory for our buildout files created by the recipe
-        self.buildout_dir = tempfile.mkdtemp('djangorecipe')
+        self.buildout_dir = tempfile.mkdtemp('xabber_recipe')
 
         self.bin_dir = os.path.join(self.buildout_dir, 'bin')
         self.develop_eggs_dir = os.path.join(self.buildout_dir,
@@ -40,7 +40,7 @@ class BaseTestRecipe(unittest.TestCase):
                 'allow-hosts': ''},
              },
             'django',
-            {'recipe': 'djangorecipe'}]
+            {'recipe': 'xabber_recipe'}]
 
         self.recipe = Recipe(*self.recipe_initialisation)
 
@@ -89,34 +89,34 @@ class TestRecipe(BaseTestRecipe):
         os.remove(name)
 
     def test_version_option_deprecation1(self):
-        options = {'recipe': 'djangorecipe',
+        options = {'recipe': 'xabber_recipe',
                    'version': 'trunk',
                    'wsgi': 'true'}
         self.assertRaises(UserError, Recipe, *('buildout', 'test', options))
 
     def test_version_option_deprecation2(self):
-        options = {'recipe': 'djangorecipe',
+        options = {'recipe': 'xabber_recipe',
                    'wsgilog': 'something'}
         self.assertRaises(UserError, Recipe, *('buildout', 'test', options))
 
     def test_version_option_deprecation3(self):
-        options = {'recipe': 'djangorecipe',
+        options = {'recipe': 'xabber_recipe',
                    'projectegg': 'something'}
         self.assertRaises(UserError, Recipe, *('buildout', 'test', options))
 
     def test_version_option_deprecation4(self):
-        options = {'recipe': 'djangorecipe',
+        options = {'recipe': 'xabber_recipe',
                    'deploy_script_extra': 'something'}
         self.assertRaises(UserError, Recipe, *('buildout', 'test', options))
 
     def test_version_option_deprecation5(self):
-        options = {'recipe': 'djangorecipe',
+        options = {'recipe': 'xabber_recipe',
                    'script-entrypoints': 'something'}
         self.assertRaises(UserError, Recipe, *('buildout', 'test', options))
 
     @mock.patch('zc.recipe.egg.egg.Scripts.working_set',
                 return_value=(None, []))
-    @mock.patch('djangorecipe.recipe.Recipe.create_manage_script')
+    @mock.patch('xabber_recipe.recipe.Recipe.create_manage_script')
     def test_extra_paths(self, manage, working_set):
 
         # The recipe allows extra-paths to be specified. It uses these to
@@ -137,7 +137,7 @@ class TestRecipe(BaseTestRecipe):
         self.recipe.options['settings'] = 'spameggs'
         self.recipe.create_manage_script([], [])
         manage = os.path.join(self.bin_dir, 'django')
-        self.assertTrue("djangorecipe.binscripts.manage('project.spameggs')"
+        self.assertTrue("xabber_recipe.binscripts.manage('project.spameggs')"
                         in open(manage).read())
 
     def test_dotted_settings_path_option(self):
@@ -145,7 +145,7 @@ class TestRecipe(BaseTestRecipe):
         self.recipe.options['dotted-settings-path'] = 'myproj.conf.production'
         self.recipe.create_manage_script([], [])
         manage = os.path.join(self.bin_dir, 'django')
-        self.assertTrue("djangorecipe.binscripts.manage('myproj.conf.production')"
+        self.assertTrue("xabber_recipe.binscripts.manage('myproj.conf.production')"
                         in open(manage).read())
 
 
@@ -173,7 +173,7 @@ class TestRecipeScripts(BaseTestRecipe):
         self.assertTrue('project.development' in contents)
         # and a line which set's up the WSGI app
         self.assertTrue("application = "
-                        "djangorecipe.binscripts.wsgi('project.development', "
+                        "xabber_recipe.binscripts.wsgi('project.development', "
                         "logfile='')"
                         in contents)
         self.assertTrue("class logger(object)" not in contents)
@@ -183,7 +183,7 @@ class TestRecipeScripts(BaseTestRecipe):
         self.recipe.options['initialization'] = 'import os\nassert True'
         self.recipe.make_wsgi_script([], [])
         wsgi_script = os.path.join(self.bin_dir, 'django.wsgi')
-        self.assertTrue('import os\nassert True\n\nimport djangorecipe'
+        self.assertTrue('import os\nassert True\n\nimport xabber_recipe'
                         in open(wsgi_script).read())
 
     def test_contents_log_protocol_script_wsgi(self):
@@ -234,7 +234,7 @@ class TestRecipeScripts(BaseTestRecipe):
         manage = os.path.join(self.bin_dir, 'django')
         self.recipe.options['initialization'] = 'import os\nassert True'
         self.recipe.create_manage_script([], [])
-        self.assertTrue('import os\nassert True\n\nimport djangorecipe'
+        self.assertTrue('import os\nassert True\n\nimport xabber_recipe'
                         in open(manage).read())
 
     def test_dotted_settings_path_option(self):
@@ -244,7 +244,7 @@ class TestRecipeScripts(BaseTestRecipe):
         self.recipe.make_wsgi_script([], [])
         wsgi_script = os.path.join(self.bin_dir, 'django.wsgi')
         self.assertTrue("application = "
-                        "djangorecipe.binscripts.wsgi('myproj.conf.production', "
+                        "xabber_recipe.binscripts.wsgi('myproj.conf.production', "
                         "logfile='')"
                         in open(wsgi_script).read())
 
@@ -326,7 +326,7 @@ class TestTesTRunner(BaseTestRecipe):
         self.recipe.options['test'] = 'knight'
         self.recipe.options['initialization'] = 'import os\nassert True'
         self.recipe.create_test_runner([recipe_dir], [])
-        self.assertTrue('import os\nassert True\n\nimport djangorecipe'
+        self.assertTrue('import os\nassert True\n\nimport xabber_recipe'
                         in open(testrunner).read())
 
     def test_relative_paths_default(self):
@@ -382,7 +382,7 @@ class TestTesTRunner(BaseTestRecipe):
              'python-version': {'executable': sys.executable}
          },
             'django',
-            {'recipe': 'djangorecipe',
+            {'recipe': 'xabber_recipe',
              'wsgi': 'true'})
         recipe.make_wsgi_script([], [])
         recipe.create_manage_script([], [])

@@ -6,7 +6,7 @@ from zc.buildout import UserError
 import pkg_resources
 import zc.recipe.egg
 
-from djangorecipe.boilerplate import WSGI_TEMPLATE
+from xabber_recipe.boilerplate import WSGI_TEMPLATE
 
 
 class Recipe(object):
@@ -79,7 +79,8 @@ class Recipe(object):
                 self.options['project'])
 
         extra_paths = self.get_extra_paths()
-        ws = self.egg.working_set(['djangorecipe'])[1]
+        ws = self.egg.working_set(['xabber_recipe'])[1]
+
         # ^^^ working_set returns (requirements, ws)
 
         script_paths = []
@@ -94,7 +95,7 @@ class Recipe(object):
         settings = self.get_settings()
         return zc.buildout.easy_install.scripts(
             [(self.options.get('control-script', self.name),
-              'djangorecipe.binscripts', 'manage')],
+              'xabber_recipe.binscripts', 'manage')],
             ws, sys.executable, self.options['bin-directory'],
             extra_paths=extra_paths,
             relative_paths=self._relative_paths,
@@ -111,7 +112,7 @@ class Recipe(object):
         if apps:
             return zc.buildout.easy_install.scripts(
                 [(self.options.get('testrunner', 'test'),
-                  'djangorecipe.binscripts', 'test')],
+                  'xabber_recipe.binscripts', 'test')],
                 working_set, sys.executable,
                 self.options['bin-directory'],
                 extra_paths=extra_paths,
@@ -140,7 +141,7 @@ class Recipe(object):
                       '%s.%s' % (self.options.get('control-script',
                                                   self.name),
                                  'wsgi'),
-                      'djangorecipe.binscripts', 'wsgi')],
+                      'xabber_recipe.binscripts', 'wsgi')],
                     ws,
                     sys.executable,
                     self.options['bin-directory'],
@@ -172,7 +173,6 @@ class Recipe(object):
         initialization = self.options['initialization']
         initialization += (
             "\n" +
-            "import os\n" +
             "os.environ['DJANGO_SETTINGS_MODULE'] = '%s'" % settings)
         created_scripts = []
         known_entrypoints = list(ws.iter_entry_points('console_scripts'))
@@ -206,12 +206,12 @@ class Recipe(object):
         extra_paths = [self.buildout['buildout']['directory']]
         pythonpath = [p.replace('/', os.path.sep) for p in
                       self.options['extra-paths'].splitlines() if p.strip()]
-        extra_paths.extend(pythonpath)
+        extra_paths.extend('')
         return extra_paths
 
     def update(self):
         extra_paths = self.get_extra_paths()
-        ws = self.egg.working_set(['djangorecipe'])[1]
+        ws = self.egg.working_set(['xabber_recipe'])[1]
         # ^^^ working_set returns (requirements, ws)
 
         self.create_manage_script(extra_paths, ws)

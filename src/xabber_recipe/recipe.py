@@ -6,7 +6,7 @@ from zc.buildout import UserError
 import pkg_resources
 import zc.recipe.egg
 
-from xabber_recipe.boilerplate import WSGI_TEMPLATE
+from xabber_recipe.boilerplate import WSGI_TEMPLATE, WSGI_HEADER
 
 
 class Recipe(object):
@@ -62,12 +62,12 @@ class Recipe(object):
         relative_paths = options.get(
             'relative-paths', buildout['buildout'].get('relative-paths',
                                                        'false'))
-        if relative_paths == 'true':
-            options['buildout-directory'] = buildout['buildout']['directory']
-            self._relative_paths = options['buildout-directory']
-        else:
-            self._relative_paths = ''
-            assert relative_paths == 'false'
+        # if relative_paths == 'true':
+        options['buildout-directory'] = buildout['buildout']['directory']
+        self._relative_paths = options['buildout-directory']
+        # else:
+        #     self._relative_paths = ''
+        #     assert relative_paths == 'false'
 
     def install(self):
         if self.options['project'] not in os.listdir(
@@ -128,12 +128,15 @@ class Recipe(object):
     def make_wsgi_script(self, extra_paths, ws):
         scripts = []
         _script_template = zc.buildout.easy_install.script_template
+        print("wsgi:")
+        print(_script_template)
         settings = self.get_settings()
         zc.buildout.easy_install.script_template = (
-            zc.buildout.easy_install.script_header +
+            WSGI_HEADER +
             WSGI_TEMPLATE +
             self.options['deploy-script-extra']
         )
+
         if self.options.get('wsgi', '').lower() == 'true':
             scripts.extend(
                 zc.buildout.easy_install.scripts(
@@ -163,6 +166,13 @@ class Recipe(object):
         so that 'gunicorn' for instance becomes 'gunicorn-with-settings'.
 
         """
+
+        zc.buildout.easy_install.script_template = (
+                WSGI_HEADER +
+                WSGI_TEMPLATE +
+                self.options['deploy-script-extra']
+        )
+
         script_names = [entrypoint.strip() for entrypoint in
                         self.options.get('scripts-with-settings').splitlines()
                         if entrypoint.strip()]
@@ -179,11 +189,15 @@ class Recipe(object):
         to_create = [entrypoint for entrypoint in known_entrypoints
                      if entrypoint.name in script_names]
         for entrypoint in to_create:
+            print(entrypoint)
             script_name = entrypoint.name + postfix
             dotted_path = entrypoint.module_name
             function_name = entrypoint.attrs[0]
             self.log.debug("Creating entrypoint %s:%s as %s",
                            dotted_path, function_name, script_name)
+            print(script_name, dotted_path, function_name)
+            print(extra_paths)
+            print(self._relative_paths)
             zc.buildout.easy_install.scripts(
                 [(script_name, dotted_path, function_name)],
                 ws, sys.executable, self.options['bin-directory'],
@@ -199,7 +213,7 @@ class Recipe(object):
         if unkown_script_names:
             raise UserError("Some script names couldn't be found: %s" % (
                 ', '.join(unkown_script_names)))
-
+        print(created_scripts)
         return created_scripts
 
     def get_extra_paths(self):
@@ -216,6 +230,7 @@ class Recipe(object):
 
         self.create_manage_script(extra_paths, ws)
         self.create_test_runner(extra_paths, ws)
+        self.create_scripts_with_settings(extra_paths, ws)
         self.make_wsgi_script(extra_paths, ws)
 
     def create_file(self, filename, template, options):
